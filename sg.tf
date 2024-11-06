@@ -1,10 +1,8 @@
 data "aws_subnet" "selected" {
-  count = length(var.subnet_ids) > 0 ? 1 : 0
-  id    = var.subnet_ids[0]
+  id = var.subnet_ids[0]
 }
 
 resource "aws_security_group" "lambda" {
-  count       = length(var.subnet_ids) > 0 ? 1 : 0
   name        = local.resource_name
   description = local.resource_name
   vpc_id      = data.aws_subnet.selected[0].vpc_id
