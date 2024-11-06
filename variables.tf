@@ -27,9 +27,9 @@ variable "nodejs_version" {
   default     = "16.x"
 }
 
-variable "prefix" {
+variable "name_prefix" {
   type        = string
-  description = "A prefix for the resource names, this helps create multiple instances of this stack for different environments"
+  description = "A name_prefix for the resource names, this helps create multiple instances of this stack for different environments"
   default     = ""
 }
 

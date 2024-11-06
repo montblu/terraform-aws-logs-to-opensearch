@@ -1,8 +1,8 @@
 resource "aws_lambda_function" "alb_logs_to_elasticsearch_vpc" {
   count            = length(var.subnet_ids) > 0 ? 1 : 0
   filename         = local.lambda_function_filename
-  function_name    = "${var.prefix}alb-logs-to-elasticsearch"
-  description      = "${var.prefix}alb-logs-to-elasticsearch"
+  function_name    = "${var.name_prefix}alb-logs-to-elasticsearch"
+  description      = "${var.name_prefix}alb-logs-to-elasticsearch"
   timeout          = 600  # Set this to 10 minutes to avoid timeouts in case of a large VPC flow logs
   memory_size      = 1024 # Set this to 1024MB to avoid timeouts in case of a large VPC flow logs
   runtime          = "nodejs${var.nodejs_version}"
@@ -21,7 +21,7 @@ resource "aws_lambda_function" "alb_logs_to_elasticsearch_vpc" {
 
   tags = merge(
     var.tags,
-    tomap({ "Scope" = "${var.prefix}lambda_function_to_elasticsearch" }),
+    tomap({ "Scope" = "${var.name_prefix}lambda_function_to_elasticsearch" }),
   )
 
   # This will be a code block with empty lists if we don't create a securitygroup and the subnet_ids are empty.
@@ -48,8 +48,8 @@ resource "aws_lambda_permission" "allow_terraform_bucket_vpc" {
 resource "aws_lambda_function" "alb_logs_to_elasticsearch" {
   count            = length(var.subnet_ids) == 0 ? 1 : 0
   filename         = local.lambda_function_filename
-  function_name    = "${var.prefix}alb-logs-to-elasticsearch"
-  description      = "${var.prefix}alb-logs-to-elasticsearch"
+  function_name    = "${var.name_prefix}alb-logs-to-elasticsearch"
+  description      = "${var.name_prefix}alb-logs-to-elasticsearch"
   timeout          = 300
   runtime          = "nodejs${var.nodejs_version}"
   role             = aws_iam_role.role.arn
@@ -68,7 +68,7 @@ resource "aws_lambda_function" "alb_logs_to_elasticsearch" {
 
   tags = merge(
     var.tags,
-    tomap({ "Scope" = "${var.prefix}lambda_function_to_elasticsearch" }),
+    tomap({ "Scope" = "${var.name_prefix}lambda_function_to_elasticsearch" }),
   )
 
   lifecycle {

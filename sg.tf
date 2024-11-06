@@ -5,8 +5,8 @@ data "aws_subnet" "selected" {
 
 resource "aws_security_group" "lambda" {
   count       = length(var.subnet_ids) > 0 ? 1 : 0
-  name        = "${var.prefix}lambda_alb_logs_to_elasticsearch"
-  description = "${var.prefix}lambda_alb_logs_to_elasticsearch"
+  name        = "${var.name_prefix}lambda_alb_logs_to_elasticsearch"
+  description = "${var.name_prefix}lambda_alb_logs_to_elasticsearch"
   vpc_id      = data.aws_subnet.selected[0].vpc_id
 
   egress {
@@ -32,6 +32,6 @@ resource "aws_security_group" "lambda" {
 
   tags = merge(
     var.tags,
-    tomap({ "Scope" = "${var.prefix}lambda_function_to_elasticsearch" }),
+    tomap({ "Scope" = "${var.name_prefix}lambda_function_to_elasticsearch" }),
   )
 }
