@@ -25,7 +25,7 @@ resource "aws_lambda_function" "alb_logs_to_elasticsearch_vpc" {
   # When these lists are empty it will deploy the lambda without VPC support.
   vpc_config {
     subnet_ids         = var.subnet_ids
-    security_group_ids = [aws_security_group.lambda[0].id]
+    security_group_ids = [aws_security_group.lambda.id]
   }
 
   lifecycle {
@@ -36,7 +36,7 @@ resource "aws_lambda_function" "alb_logs_to_elasticsearch_vpc" {
 resource "aws_lambda_permission" "allow_terraform_bucket_vpc" {
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.alb_logs_to_elasticsearch_vpc[0].arn
+  function_name = aws_lambda_function.alb_logs_to_elasticsearch_vpc.arn
   principal     = "s3.amazonaws.com"
   source_arn    = var.s3_bucket_arn
 }

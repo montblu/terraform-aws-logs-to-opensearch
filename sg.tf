@@ -5,7 +5,7 @@ data "aws_subnet" "selected" {
 resource "aws_security_group" "lambda" {
   name        = local.resource_name
   description = local.resource_name
-  vpc_id      = data.aws_subnet.selected[0].vpc_id
+  vpc_id      = data.aws_subnet.selected.vpc_id
 
   egress {
     from_port   = 443
