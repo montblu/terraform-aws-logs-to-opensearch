@@ -1,18 +1,6 @@
-variable "doctype" {
-  type        = string
-  description = "doctype"
-  default     = "alb-access-logs"
-}
-
 variable "es_endpoint" {
   type        = string
   description = "AWS elasticsearch endpoint. Without http:// or https:// "
-}
-
-variable "index" {
-  type        = string
-  description = "Index to create. adds a timestamp to index. Example: alblogs-2016.03.31"
-  default     = "alblogs"
 }
 
 variable "lambda_function_filename" {
@@ -24,12 +12,17 @@ variable "lambda_function_filename" {
 variable "nodejs_version" {
   type        = string
   description = "Nodejs version to be used"
-  default     = "14.x"
+  default     = "16.x"
 }
 
-variable "prefix" {
+variable "name" {
   type        = string
-  description = "A prefix for the resource names, this helps create multiple instances of this stack for different environments"
+  description = "Name of the resource."
+}
+
+variable "name_prefix" {
+  type        = string
+  description = "A name_prefix for the resource names, this helps create multiple instances of this stack for different environments"
   default     = ""
 }
 
@@ -57,7 +50,10 @@ variable "subnet_ids" {
 variable "tags" {
   type        = map(string)
   description = "Tags to apply"
-  default = {
-    Name = "alb-logs-to-es"
-  }
+  default     = {}
+}
+
+variable "send_only_vpc_logs_with_dest_port" {
+  type    = string
+  default = ""
 }

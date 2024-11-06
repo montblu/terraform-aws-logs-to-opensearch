@@ -6,14 +6,14 @@ data "template_file" "policy" {
 }
 
 resource "aws_iam_policy" "policy" {
-  name        = "${var.prefix}alb-logs-to-elasticsearch"
+  name        = local.resource_name
   path        = "/"
-  description = "Policy for ${var.prefix}alb-logs-to-elasticsearch Lambda function"
+  description = "Policy for ${local.resource_name} Lambda function"
   policy      = data.template_file.policy.rendered
 }
 
 resource "aws_iam_role" "role" {
-  name = "${var.prefix}alb-logs-to-elasticsearch"
+  name = local.resource_name
 
   assume_role_policy = <<EOF
 {
@@ -37,7 +37,6 @@ resource "aws_iam_role_policy_attachment" "policy_attachment" {
 }
 
 resource "aws_iam_role_policy_attachment" "policy_attachment_vpc" {
-  count      = length(var.subnet_ids) > 0 ? 1 : 0
   role       = aws_iam_role.role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
