@@ -24,7 +24,7 @@ variable "lambda_function_filename" {
 variable "nodejs_version" {
   type        = string
   description = "Nodejs version to be used"
-  default     = "14.x"
+  default     = "16.x"
 }
 
 variable "prefix" {
