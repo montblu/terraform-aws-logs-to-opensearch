@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "alb_logs_to_elasticsearch_vpc" {
   count            = length(var.subnet_ids) > 0 ? 1 : 0
   filename         = local.lambda_function_filename
-  function_name    = "${var.name_prefix}alb-logs-to-elasticsearch"
+  function_name    = local.resource_name
   description      = "${var.name_prefix}alb-logs-to-elasticsearch"
   timeout          = 600  # Set this to 10 minutes to avoid timeouts in case of a large VPC flow logs
   memory_size      = 1024 # Set this to 1024MB to avoid timeouts in case of a large VPC flow logs
