@@ -1,18 +1,6 @@
-variable "doctype" {
-  type        = string
-  description = "doctype"
-  default     = "alb-access-logs"
-}
-
 variable "es_endpoint" {
   type        = string
   description = "AWS elasticsearch endpoint. Without http:// or https:// "
-}
-
-variable "index" {
-  type        = string
-  description = "Index to create. adds a timestamp to index. Example: alblogs-2016.03.31"
-  default     = "alblogs"
 }
 
 variable "lambda_function_filename" {
@@ -25,6 +13,11 @@ variable "nodejs_version" {
   type        = string
   description = "Nodejs version to be used"
   default     = "16.x"
+}
+
+variable "name" {
+  type        = string
+  description = "Name of the resource."
 }
 
 variable "name_prefix" {

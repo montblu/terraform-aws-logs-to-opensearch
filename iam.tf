@@ -6,14 +6,14 @@ data "template_file" "policy" {
 }
 
 resource "aws_iam_policy" "policy" {
-  name        = "${var.name_prefix}alb-logs-to-elasticsearch"
+  name        = local.resource_name
   path        = "/"
   description = "Policy for ${var.name_prefix}alb-logs-to-elasticsearch Lambda function"
   policy      = data.template_file.policy.rendered
 }
 
 resource "aws_iam_role" "role" {
-  name = "${var.name_prefix}alb-logs-to-elasticsearch"
+  name = local.resource_name
 
   assume_role_policy = <<EOF
 {
