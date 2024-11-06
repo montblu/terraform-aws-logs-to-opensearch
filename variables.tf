@@ -50,7 +50,10 @@ variable "subnet_ids" {
 variable "tags" {
   type        = map(string)
   description = "Tags to apply"
-  default = {
-    Name = "alb-logs-to-es"
-  }
+  default     = {}
+}
+
+variable "send_only_vpc_logs_with_dest_port" {
+  type    = string
+  default = ""
 }

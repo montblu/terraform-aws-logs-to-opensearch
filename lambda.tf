@@ -11,8 +11,10 @@ resource "aws_lambda_function" "alb_logs_to_elasticsearch_vpc" {
 
   environment {
     variables = {
-      es_endpoint = var.es_endpoint
-      region      = var.region
+      INDEX_PREFIX                 = var.name_prefix
+      VPC_SEND_ONLY_LOGS_WITH_PORT = var.send_only_vpc_logs_with_dest_port
+      es_endpoint                  = var.es_endpoint
+      region                       = var.region
     }
   }
 
