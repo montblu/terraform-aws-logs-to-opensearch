@@ -1,44 +1,62 @@
-resource "aws_lambda_function" "alb_logs_to_elasticsearch_vpc" {
-  filename         = local.lambda_function_filename
-  function_name    = local.resource_name
-  description      = local.resource_name
-  timeout          = 600  # Set this to 10 minutes to avoid timeouts in case of a large VPC flow logs
-  memory_size      = 1024 # Set this to 1024MB to avoid timeouts in case of a large VPC flow logs
-  runtime          = "nodejs${var.nodejs_version}"
-  role             = aws_iam_role.role.arn
-  handler          = "index.handler"
-  source_code_hash = filebase64sha256(local.lambda_function_filename)
+locals {
+  package_url = "https://github.com/montblu/terraform-aws-logs-to-opensearch/archive/refs/tags/${data.external.latest_release.result["tag"]}.zip"
+  downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
+}
 
-  environment {
-    variables = {
-      INDEX_PREFIX                 = var.name_prefix
-      VPC_SEND_ONLY_LOGS_WITH_PORT = var.send_only_vpc_logs_with_dest_port
-      es_endpoint                  = var.es_endpoint
-      region                       = var.region
-    }
+data "external" "latest_release" {
+  program = ["bash", "${path.module}/files/fetch_release.sh"]
+}
+
+resource "null_resource" "download_package" {
+  triggers = {
+    downloaded = local.downloaded
   }
+
+  provisioner "local-exec" {
+    command = "curl -L -o ${local.downloaded} ${local.package_url}"
+  }
+}
+
+data "null_data_source" "downloaded_package" {
+  inputs = {
+    id       = null_resource.download_package.id
+    filename = local.downloaded
+  }
+}
+
+module "alb_logs_to_elasticsearch_vpc" {
+  source = "terraform-aws-modules/lambda/aws"
+
+  function_name = local.resource_name
+  description   = local.resource_name
+
+  handler                = "index.handler"
+  runtime                = "nodejs${var.nodejs_version}"
+  memory_size            = 1024 # Set this to 1024MB to avoid timeouts in case of a large VPC flow logs
+  timeout                = 600  # Set this to 10 minutes to avoid timeouts in case of a large VPC flow logs
+  lambda_role            = aws_iam_role.role.arn
+  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
+
+  create_package = false
+
+  environment_variables = {
+    INDEX_PREFIX                 = var.name_prefix
+    VPC_SEND_ONLY_LOGS_WITH_PORT = var.send_only_vpc_logs_with_dest_port
+    es_endpoint                  = var.es_endpoint
+    region                       = var.region
+  }
+
+  vpc_subnet_ids         = var.subnet_ids
+  vpc_security_group_ids = [aws_security_group.lambda.id]
 
   tags = merge(
     var.tags,
     tomap({ "Scope" = local.resource_name }),
   )
 
-  # This will be a code block with empty lists if we don't create a securitygroup and the subnet_ids are empty.
-  # When these lists are empty it will deploy the lambda without VPC support.
-  vpc_config {
-    subnet_ids         = var.subnet_ids
-    security_group_ids = [aws_security_group.lambda.id]
+  allowed_triggers = {
+    statement_id = "AllowExecutionFromS3Bucket"
+    principal    = "s3.amazonaws.com"
+    source_arn   = var.s3_bucket_arn
   }
-
-  lifecycle {
-    ignore_changes = [filename]
-  }
-}
-
-resource "aws_lambda_permission" "allow_terraform_bucket_vpc" {
-  statement_id  = "AllowExecutionFromS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.alb_logs_to_elasticsearch_vpc.arn
-  principal     = "s3.amazonaws.com"
-  source_arn    = var.s3_bucket_arn
 }
