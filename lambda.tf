@@ -13,10 +13,13 @@ resource "null_resource" "download_package" {
   }
 
   provisioner "local-exec" {
-    command = "curl -L -o ${local.downloaded} ${local.package_url}"
+    command = <<EOT
+      set -e
+      curl -L -o ${local.downloaded} ${local.package_url}
+      unzip -o ${local.downloaded} -d ${path.module}/
+    EOT 
   }
 }
-
 data "null_data_source" "downloaded_package" {
   inputs = {
     id       = null_resource.download_package.id
@@ -35,7 +38,7 @@ module "alb_logs_to_elasticsearch_vpc" {
   memory_size            = 1024 # Set this to 1024MB to avoid timeouts in case of a large VPC flow logs
   timeout                = 600  # Set this to 10 minutes to avoid timeouts in case of a large VPC flow logs
   lambda_role            = aws_iam_role.role.arn
-  local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
+  local_existing_package = "${path.module}/alb-logs-to-elasticsearch.zip"
   create_role            = false
   create_package         = false
   publish                = true
