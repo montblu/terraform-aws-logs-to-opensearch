@@ -36,8 +36,9 @@ module "alb_logs_to_elasticsearch_vpc" {
   timeout                = 600  # Set this to 10 minutes to avoid timeouts in case of a large VPC flow logs
   lambda_role            = aws_iam_role.role.arn
   local_existing_package = data.null_data_source.downloaded_package.outputs["filename"]
-
-  create_package = false
+  create_role            = false
+  create_package         = false
+  publish                = true
 
   environment_variables = {
     INDEX_PREFIX                 = var.name_prefix
@@ -55,8 +56,9 @@ module "alb_logs_to_elasticsearch_vpc" {
   )
 
   allowed_triggers = {
-    statement_id = "AllowExecutionFromS3Bucket"
-    principal    = "s3.amazonaws.com"
-    source_arn   = var.s3_bucket_arn
+    S3 = {
+      principal  = "s3.amazonaws.com"
+      source_arn = var.s3_bucket_arn
+    }
   }
 }
