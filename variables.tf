@@ -57,3 +57,9 @@ variable "send_only_vpc_logs_with_dest_port" {
   type    = string
   default = ""
 }
+
+variable "desired_version" {
+  type        = string
+  description = "Desired version to fetch. Will get latest if left empty"
+  default     = ""
+}

@@ -1,5 +1,5 @@
 locals {
-  package_url = "https://github.com/montblu/terraform-aws-logs-to-opensearch/archive/refs/tags/${data.external.latest_release.result["tag"]}.zip"
+  package_url = var.desired_version != "" ? "https://github.com/montblu/terraform-aws-logs-to-opensearch/archive/refs/tags/${var.desired_version}.zip" : "https://github.com/montblu/terraform-aws-logs-to-opensearch/archive/refs/tags/${data.external.latest_release.result["tag"]}.zip"
   downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
 }
 
@@ -17,7 +17,7 @@ resource "null_resource" "download_package" {
       set -e
       curl -L -o ${local.downloaded} ${local.package_url}
       unzip -o ${local.downloaded} -d ${path.module}/
-    EOT 
+    EOT
   }
 }
 data "null_data_source" "downloaded_package" {
