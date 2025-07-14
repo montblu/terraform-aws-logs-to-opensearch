@@ -1,6 +1,6 @@
 locals {
-  package_url = var.desired_version != "" ? "https://github.com/montblu/terraform-aws-logs-to-opensearch/archive/refs/tags/${var.desired_version}.zip" : "https://github.com/montblu/terraform-aws-logs-to-opensearch/archive/refs/tags/${data.external.latest_release.result["tag"]}.zip"
-  downloaded  = "downloaded_package_${md5(local.package_url)}.zip"
+  package_url = var.desired_version != "" ? "https://github.com/montblu/aws-logs-to-opensearch/releases/download/${var.desired_version}/aws-logs-to-opensearch-${var.desired_version}.tar.gz" : "https://github.com/montblu/aws-logs-to-opensearch/releases/download/${data.external.latest_release.result["tag"]}/aws-logs-to-opensearch-${data.external.latest_release.result["tag"]}.tar.gz"
+  downloaded  = "/tmp/${md5(local.package_url)}.tar.gz"
 }
 
 data "external" "latest_release" {
@@ -16,7 +16,12 @@ resource "null_resource" "download_package" {
     command = <<EOT
       set -e
       curl -L -o ${local.downloaded} ${local.package_url}
-      unzip -o ${local.downloaded} -d ${path.module}/
+      mkdir -p /tmp/extracted_package
+      tar -xzf ${local.downloaded} -C /tmp/extracted_package
+      cd /tmp/extracted_package
+      zip -r /tmp/alb-logs-to-elasticsearch.zip .
+      cd -
+      mv /tmp/alb-logs-to-elasticsearch.zip ${path.module}/
     EOT
   }
 }
