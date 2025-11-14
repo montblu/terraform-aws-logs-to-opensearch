@@ -53,9 +53,10 @@ variable "tags" {
   default     = {}
 }
 
-variable "send_only_vpc_logs_with_dest_port" {
-  type    = string
-  default = ""
+variable "send_only_vpc_logs_with_dest_ports" {
+  description = "Send only VPC logs with the Destination Port(s). Example '22,23'"
+  type        = string
+  default     = ""
 }
 
 variable "desired_version" {

@@ -49,10 +49,10 @@ module "alb_logs_to_elasticsearch_vpc" {
   publish                = true
 
   environment_variables = {
-    INDEX_PREFIX                 = var.name_prefix
-    VPC_SEND_ONLY_LOGS_WITH_PORT = var.send_only_vpc_logs_with_dest_port
-    es_endpoint                  = var.es_endpoint
-    region                       = var.region
+    INDEX_PREFIX                  = var.name_prefix
+    VPC_SEND_ONLY_LOGS_WITH_PORTS = var.send_only_vpc_logs_with_dest_ports
+    es_endpoint                   = var.es_endpoint
+    region                        = var.region
   }
 
   vpc_subnet_ids         = var.subnet_ids
