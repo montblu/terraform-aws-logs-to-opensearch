@@ -34,6 +34,7 @@ data "null_data_source" "downloaded_package" {
 
 module "alb_logs_to_elasticsearch_vpc" {
   source = "terraform-aws-modules/lambda/aws"
+  version = "8.2.0"
 
   function_name = local.resource_name
   description   = local.resource_name
