@@ -1,15 +1,10 @@
-data "template_file" "policy" {
-  template = file("${path.module}/files/es_policy.json")
-  vars = {
-    s3_bucket_arn = var.s3_bucket_arn
-  }
-}
-
 resource "aws_iam_policy" "policy" {
   name        = local.resource_name
   path        = "/"
   description = "Policy for ${local.resource_name} Lambda function"
-  policy      = data.template_file.policy.rendered
+  policy = templatefile("${path.module}/files/es_policy.json", {
+    s3_bucket_arn = var.s3_bucket_arn
+  })
 }
 
 resource "aws_iam_role" "role" {
