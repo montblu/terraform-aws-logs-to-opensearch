@@ -25,12 +25,6 @@ resource "null_resource" "download_package" {
     EOT
   }
 }
-data "null_data_source" "downloaded_package" {
-  inputs = {
-    id       = null_resource.download_package.id
-    filename = local.downloaded
-  }
-}
 
 module "alb_logs_to_elasticsearch_vpc" {
   source = "terraform-aws-modules/lambda/aws"
